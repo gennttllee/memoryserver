@@ -11,16 +11,11 @@ dotenv.config();
 
 app.use(bodyParser.json({ limit: '30mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
+
 app.use(cors({
-    origin: "*"
-}));
-app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.header(
-        'Access-Control-Allow-Origin'
-    );
-    next();
-});
+    origin : ['https://memory-gennttllee.vercel.app/', 'https://memory-gennttllee.vercel.app', 'http://localhost:3000', 'http://localhost3000/']
+}))
+
 app.use('/posts', postRoutes);
 app.use('/user', userRoutes);
 

@@ -6,7 +6,7 @@ export const getPosts = async (req, res) => {
         const postMessage = await PostMessage.find().sort({ _id: -1 });
         res.status(200).json(postMessage);
     } catch (error) {
-        res.status(404).json(error.message)
+        res.status(500).json(error.message)
     }
 }
 
@@ -26,7 +26,7 @@ export const search = async (req, res) => {
 
     try {
         const posts = await PostMessage.find({
-            $or: [ { message: title },{ tags: title },{name : title},{email : title}, {comments : title}]
+            $or: [{ message: title }, { tags: title }, { name: title }, { email: title }, { comments: title }]
         })
         res.status(200).json(posts)
     } catch (error) {
