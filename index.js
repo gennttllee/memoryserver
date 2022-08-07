@@ -12,7 +12,7 @@ dotenv.config();
 app.use(bodyParser.json({limit : '30mb', extended : true}));
 app.use(bodyParser.urlencoded({limit : '30mb', extended : true}));
 app.use(cors({
-    origin: "https://memory-gennttllee.vercel.app/",
+    origin: "*",
 }));
 app.use('/posts', postRoutes);
 app.use('/user', userRoutes);
