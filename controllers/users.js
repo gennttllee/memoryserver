@@ -5,6 +5,7 @@ import PostMessage from '../models/postMessage.js';
 import nodemailer from 'nodemailer';
 import { google } from 'googleapis';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 
 dotenv.config();
 
@@ -20,12 +21,12 @@ const oauth2 = new google.auth.OAuth2(
 oauth2.setCredentials({ refresh_token: REFRESH_TOKEN })
 
 const sendMail = async (email) => {
-    const text = Math.floor((Math.random()*14031995)+1);
+    const text = Math.floor((Math.random() * 14031995) + 1);
     const mailOption = {
         from: 'markwilliamz1995@gmail.com',
         to: email,
         subject: 'use this code to reset your password',
-        text : `password reset code is ${text}`
+        text: `password reset code is ${text}`
     }
     try {
         const accessToken = await oauth2.getAccessToken();
@@ -70,25 +71,34 @@ export const resetPassword = async (req, res) => {
         const result = await User.findOne({ email })
         if (!result) return res.status(401).json({ message: 'user does not exist' })
         const text = await sendMail(email);
-        res.status(200).send({message : 'OTP sent to user email', otp : text})
+        res.status(200).send({ message: 'OTP sent to user email', otp: text })
     } catch (error) {
         res.status(500).json(error)
     }
 }
 
-export const patchPassword = async(req, res)=>{
+export const getUsers = async (req, res) => {
+    try {
+        const people = await User.find();
+        res.status(200).json(people)
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
+export const patchPassword = async (req, res) => {
     const { email } = req.params;
-    const {newPassword} = req.body;
+    const { newPassword } = req.body;
     try {
         let existUser = await User.findOne({ email });
         if (!existUser) return res.status(401).json({ message: 'user with this email does not exist' })
         const password = await bcrypt.hash(newPassword, 12);
         existUser.password = password;
-        const {_id } = existUser;
-        const result = await User.findByIdAndUpdate(_id, existUser, {new : true})
+        const { _id } = existUser;
+        const result = await User.findByIdAndUpdate(_id, existUser, { new: true })
         const token = jwt.sign({
             email: result.email, id: result._id,
-        }, 'Malachi', { expiresIn: '1hr' });
+        }, 'Malachi', { expiresIn: '30d' });
 
         res.status(200).json({ result, token })
     } catch (error) {
@@ -108,7 +118,7 @@ export const signIn = async (req, res) => {
 
         const token = jwt.sign({
             email: existUser.email, id: existUser._id,
-        }, 'Malachi', { expiresIn: '1hr' });
+        }, 'Malachi', { expiresIn: '30d' });
 
         res.status(200).json({ result: existUser, token })
 
@@ -132,7 +142,7 @@ export const googled = async (req, res) => {
             const result = await User.create({ name, email, password, picture, id: sub })
             const token = jwt.sign({
                 email: result.email, id: result._id,
-            }, 'Malachi', { expiresIn: '1hr' });
+            }, 'Malachi', { expiresIn: '30d' });
             res.status(200).json({ result, token })
         }
     } catch (error) {
@@ -154,7 +164,7 @@ export const signUp = async (req, res) => {
 
         const token = jwt.sign({
             email: result.email, id: result._id,
-        }, 'Malachi', { expiresIn: '1hr' });
+        }, 'Malachi', { expiresIn: '30d' });
 
         res.status(200).json({ result, token })
 
